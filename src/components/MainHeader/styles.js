@@ -40,7 +40,7 @@ export const leftBox = css`
         font-size: 18px;
         font-weight: 700;
         color: oklch(51.1% 0.262 276.966);
-        cursor: default;
+        cursor: pointer;
     }
 `;
 

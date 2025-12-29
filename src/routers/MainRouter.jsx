@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import MainPage from "../pages/user/MainPage/MainPage";
 import Layout from "../components/Layout/Layout";
 import AuthRouter from "./AuthRouter";
+import BoardRouter from "./BoardRouter";
 
 function MainRouter() {
     const [showSideBar, setShowSideBar] = useState(false);
@@ -23,6 +24,16 @@ function MainRouter() {
                     }
                 />
                 <Route path="/auth/*" element={<AuthRouter />} />
+                <Route
+                    path="/board/*"
+                    element={
+                        <Layout
+                            showSideBar={showSideBar}
+                            setShowSideBar={setShowSideBar}>
+                            <BoardRouter />
+                        </Layout>
+                    }
+                />
             </Routes>
         </>
     );

@@ -20,14 +20,14 @@ function MainHeader({ showSideBar, setShowSideBar }) {
                 <button onClick={() => setShowSideBar((prev) => !prev)}>
                     <IoMenu />
                 </button>
-                <div>TechBoard</div>
+                <div onClick={() => navigate("/")}>TechBoard</div>
             </div>
             <div css={s.rightBox}>
                 <button onClick={onClickSigninHandler}>로그인</button>
                 <button onClick={onClickSignupHandler}>회원가입</button>
             </div>
             <div css={s.sideBarContainer(showSideBar)}>
-                <SideBar />
+                <SideBar setShowSideBar={setShowSideBar} />
             </div>
         </div>
     );
