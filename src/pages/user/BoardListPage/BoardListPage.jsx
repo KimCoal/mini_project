@@ -4,7 +4,10 @@ import * as s from "./styles";
 import { LuSearch } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getBoardByKeywordRequest, getBoardListRequest } from "../../../apis/board/boardApis";
+import {
+    getBoardByKeywordRequest,
+    getBoardListRequest,
+} from "../../../apis/board/boardApis";
 
 function BoardListPage() {
     const [boardList, setBoardList] = useState([]);
@@ -33,7 +36,7 @@ function BoardListPage() {
                 } else if (response.data.status === "failed") {
                     alert(response.data.message);
                 }
-            })
+            });
         }
     };
 
@@ -71,7 +74,12 @@ function BoardListPage() {
                                 </div>
                                 <div css={s.boardBottomBox}>
                                     <div>
-                                        <div>김</div>
+                                        <div css={s.profileImgBox}>
+                                            <img
+                                                src={board.profileImg}
+                                                alt="profileImg"
+                                            />
+                                        </div>
                                         <p>{board.username}</p>
                                     </div>
                                     <div>

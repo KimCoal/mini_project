@@ -77,8 +77,8 @@ export const boardBottomBox = css`
         gap: 10px;
 
         & > div {
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             border-radius: 50px;
             background-color: aquamarine;
             display: flex;
@@ -87,7 +87,7 @@ export const boardBottomBox = css`
         }
 
         & > p {
-            font-size: 14px;
+            font-size: 18px;
             color: #0a0a0a;
         }
     }
@@ -100,4 +100,21 @@ export const bottomBox = css`
     & > p {
         color: #364153;
     }
-`
+`;
+
+export const profileImgBox = css`
+    width: 32px;
+    height: 32px;
+    border-radius: 50px;
+    background-color: aquamarine;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+
+    & > img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+`;

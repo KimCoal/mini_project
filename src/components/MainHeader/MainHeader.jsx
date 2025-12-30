@@ -22,12 +22,13 @@ function MainHeader({ showSideBar, setShowSideBar }) {
                 {loading ? (
                     <></>
                 ) : isLoggedIn ? (
-                    <p
+                    <div
+                        css={s.profileBox}
                         onClick={() =>
                             navigate(`/profile/${principal.username}`)
                         }>
-                        {principal.username}
-                    </p>
+                        <img src={principal?.profileImg} alt="profileImg" />
+                    </div>
                 ) : (
                     <>
                         <button onClick={() => navigate("/auth/signin")}>

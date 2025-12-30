@@ -62,8 +62,22 @@ export const profileBottomBox = css`
 export const profileImg = css`
     width: 90px;
     height: 90px;
-    background-color: beige;
     border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+
+    & > img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        cursor: pointer;
+    }
+
+    & > input {
+        display: none;
+    }
 `;
 
 export const profileSettingBox = css`
@@ -106,4 +120,21 @@ export const boardBox = css`
     display: flex;
     justify-content: center;
     align-items: center;
-`
+`;
+export const blurBox = css`
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.3);
+
+    & > h4 {
+        font-size: 60px;
+        color: #0a0a0a;
+    }
+`;
