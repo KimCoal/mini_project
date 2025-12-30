@@ -62,6 +62,7 @@ export const mainContainer = css`
             gap: 12px;
 
             & > input {
+                width: 100%;
                 height: 24px;
                 font-size: 14px;
                 outline: none;
