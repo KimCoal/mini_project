@@ -4,14 +4,15 @@ import MainPage from "../pages/user/MainPage/MainPage";
 import Layout from "../components/Layout/Layout";
 import AuthRouter from "./AuthRouter";
 import BoardRouter from "./BoardRouter";
-import { getPrincipal } from "../apis/auth/authApis";
 import { useQuery } from "@tanstack/react-query";
+import { getPrincipal } from "../apis/auth/authApis";
 import { usePrincipalState } from "../store/usePrincipalState";
+import AccountRouter from "./AccountRouter";
 
 function MainRouter() {
     const accessToken = localStorage.getItem("AccessToken");
-    const [showSideBar, setShowSideBar] = useState(false);
-    const { isLoggedIn, principal, login, logout } = usePrincipalState();
+    const { isLoggedIn, principal, loading, login, logout, setLoading } =
+        usePrincipalState();
     const { data, isLoading } = useQuery({
         queryKey: ["getPrincipal"],
         queryFn: getPrincipal,
@@ -20,10 +21,14 @@ function MainRouter() {
     });
 
     useEffect(() => {
-        if (data?.data?.status === "success") {
+        if (data?.data.status === "success") {
             login(data?.data.data);
         }
     }, [data, login]);
+
+    useEffect(() => {
+        setLoading(isLoading);
+    }, [isLoading]);
 
     return (
         <>
@@ -31,29 +36,21 @@ function MainRouter() {
                 <Route
                     path="/"
                     element={
-                        <Layout
-                            showSideBar={showSideBar}
-                            setShowSideBar={setShowSideBar}
-                            principal={data}>
-                            <MainPage
-                                showSideBar={showSideBar}
-                                setShowSideBar={setShowSideBar}
-                            />
+                        <Layout>
+                            <MainPage />
                         </Layout>
                     }
                 />
-                <Route path="/auth/*" element={<AuthRouter />} />
                 <Route
                     path="/board/*"
                     element={
-                        <Layout
-                            showSideBar={showSideBar}
-                            setShowSideBar={setShowSideBar}
-                            principal={data}>
+                        <Layout>
                             <BoardRouter />
                         </Layout>
                     }
                 />
+                <Route path="/profile/*" element={<Layout><AccountRouter /></Layout>} />
+                <Route path="/auth/*" element={<AuthRouter />} />
             </Routes>
         </>
     );

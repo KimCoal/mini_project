@@ -9,6 +9,7 @@ export const container = css`
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #dbdbdb;
+    flex-shrink: 0;
 `;
 
 export const leftBox = css`
@@ -44,11 +45,12 @@ export const leftBox = css`
     }
 `;
 
-export const rightBox =  css`
+export const rightBox = css`
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 20px;
+
     & > button {
         border: none;
         padding: 8px 16px;
@@ -87,7 +89,7 @@ export const rightBox =  css`
 export const sideBarContainer = (showSideBar) => css`
     position: absolute;
     z-index: 100;
-    top: 0px;
+    top: 0;
     left: ${showSideBar ? "0" : "-300px"};
-    transition: all 0.15s ease;
+    transition: all 0.15s ease-in-out;
 `;

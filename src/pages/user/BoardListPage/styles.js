@@ -6,12 +6,6 @@ export const container = css`
     height: 100%;
     justify-content: center;
     align-items: center;
-    overflow: auto;
-    -ms-overflow-style: none;
-
-    &::-webkit-scrollbar {
-        display: none;
-    }
 `;
 
 export const mainContainer = css`

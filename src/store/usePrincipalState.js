@@ -3,7 +3,7 @@ import { create } from "zustand";
 export const usePrincipalState = create((set, get) => ({
     isLoggedIn: false,
     principal: null,
-    isLoading: true,
+    loading: true,
     login: (userData) => set({ isLoggedIn: true, principal: userData }),
     logout: () => {
         localStorage.removeItem("AccessToken");
@@ -15,6 +15,6 @@ export const usePrincipalState = create((set, get) => ({
         set({
             isLoggedIn: get().isLoggedIn,
             principal: get().principal,
-            isLoading: isLoading,
+            loading: isLoading,
         }),
 }));

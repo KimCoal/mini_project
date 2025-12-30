@@ -1,21 +1,15 @@
 /** @jsxImportSource @emotion/react */
-import { useNavigate } from "react-router-dom";
 import { IoMenu } from "react-icons/io5";
 import * as s from "./styles";
+import { useNavigate } from "react-router-dom";
 import SideBar from "../SideBar/SideBar";
-import { useState } from "react";
 import { usePrincipalState } from "../../store/usePrincipalState";
 
 function MainHeader({ showSideBar, setShowSideBar }) {
-    const { isLoggedIn, principal, login, logout } = usePrincipalState();
     const navigate = useNavigate();
+    const { isLoggedIn, principal, loading, login, logout } =
+        usePrincipalState();
 
-    const onClickSigninHandler = () => {
-        navigate("/auth/signin");
-    };
-    const onClickSignupHandler = () => {
-        navigate("/auth/signup");
-    };
     return (
         <div css={s.container}>
             <div css={s.leftBox}>
@@ -25,12 +19,23 @@ function MainHeader({ showSideBar, setShowSideBar }) {
                 <div onClick={() => navigate("/")}>TechBoard</div>
             </div>
             <div css={s.rightBox}>
-                {isLoggedIn ? (
-                    <p>{principal.username}</p>
+                {loading ? (
+                    <></>
+                ) : isLoggedIn ? (
+                    <p
+                        onClick={() =>
+                            navigate(`/profile/${principal.username}`)
+                        }>
+                        {principal.username}
+                    </p>
                 ) : (
                     <>
-                        <button onClick={onClickSigninHandler}>로그인</button>
-                        <button onClick={onClickSignupHandler}>회원가입</button>
+                        <button onClick={() => navigate("/auth/signin")}>
+                            로그인
+                        </button>
+                        <button onClick={() => navigate("/auth/signup")}>
+                            회원가입
+                        </button>
                     </>
                 )}
             </div>
