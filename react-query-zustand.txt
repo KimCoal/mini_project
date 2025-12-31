@@ -1,0 +1,509 @@
+==========================================
+React Query (TanStack Query)
+==========================================
+
+📌 React Query란?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+백엔드 서버에서 데이터를 가져와서 화면에 보여주는 것을 도와주는 도구입니다.
+
+비유: 
+- 서버 = 도서관
+- React Query = 도서관 사서
+- 데이터 = 책
+
+도서관에서 책을 빌려올 때, 매번 도서관에 가는 게 아니라
+사서(React Query)가 책을 가져다주고, 한 번 가져온 책은 
+임시 보관함(캐시)에 저장해둡니다.
+나중에 같은 책을 또 요청하면, 도서관에 가지 않고 
+임시 보관함에서 바로 가져다줍니다!
+
+
+📌 기본 개념
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. 캐시 (Cache)
+   - 한 번 가져온 데이터를 임시로 저장하는 곳
+   - 같은 데이터를 또 요청하면 서버에 가지 않고 캐시에서 가져옴
+   - 빠르고 효율적!
+
+2. queryKey (쿼리 키)
+   - 데이터를 구분하는 이름표
+   - 예: ["게시물목록"], ["사용자정보"]
+   - 같은 키를 사용하면 같은 데이터를 공유함
+
+3. queryFn (쿼리 함수)
+   - 실제로 서버에서 데이터를 가져오는 함수
+   - axios나 fetch를 사용해서 API 호출
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1️⃣ useQuery - 데이터 읽기 (GET)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📖 용도: 서버에서 데이터를 가져와서 화면에 보여줄 때 사용
+         (게시물 목록 보기, 사용자 정보 보기 등)
+
+🔧 기본 사용법:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const { data, isLoading, isError } = useQuery({
+    queryKey: ["게시물목록"],        // 이 데이터의 이름표
+    queryFn: getBoardListRequest,    // 데이터를 가져오는 함수
+});
+
+📝 각 옵션 설명:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- queryKey: ["게시물목록"]
+  → 이 데이터를 구분하는 이름표
+  → 다른 컴포넌트에서도 같은 키를 사용하면 같은 데이터 공유
+
+- queryFn: getBoardListRequest
+  → 실제로 서버에 요청하는 함수
+  → 예: axios.get("/board/list")
+
+- enabled: true/false
+  → 데이터를 가져올지 말지 결정
+  → enabled: false면 서버에 요청 안 함
+  → 예: 로그인했을 때만 데이터 가져오기
+
+📤 반환값 (받아오는 것들):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- data: 서버에서 받아온 데이터
+  → 예: { status: "success", data: [...] }
+
+- isLoading: 지금 데이터를 가져오는 중인지 (true/false)
+  → true면 "로딩 중..." 표시 가능
+
+- isError: 에러가 발생했는지 (true/false)
+  → true면 "에러 발생" 메시지 표시 가능
+
+- error: 에러 내용 (에러가 발생했을 때만 있음)
+
+- refetch: 수동으로 다시 데이터 가져오기
+  → 버튼 클릭 시 새로고침할 때 사용
+
+- isSuccess: 성공했는지 (true/false)
+
+💡 특징:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ 컴포넌트가 화면에 나타나면 자동으로 데이터 가져옴
+✅ 같은 queryKey를 사용하면 데이터를 공유함
+✅ 한 번 가져온 데이터는 캐시에 저장되어 빠르게 보여줌
+
+📌 예시 코드:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function BoardListPage() {
+    const { data, isLoading } = useQuery({
+        queryKey: ["게시물목록"],
+        queryFn: getBoardListRequest,
+    });
+
+    if (isLoading) {
+        return <div>로딩 중...</div>;
+    }
+
+    return (
+        <div>
+            {data?.data.data.map((board) => (
+                <div key={board.id}>{board.title}</div>
+            ))}
+        </div>
+    );
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2️⃣ useInfiniteQuery - 무한 스크롤 (GET 여러 페이지)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📖 용도: 게시물 목록을 스크롤할 때마다 더 많은 데이터를 가져올 때 사용
+         (인스타그램 피드, 페이스북 타임라인처럼)
+
+🔧 기본 사용법:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
+} = useInfiniteQuery({
+    queryKey: ["게시물목록"],
+    queryFn: ({ pageParam = 0 }) => getBoardListRequest(pageParam),
+    getNextPageParam: (lastPage, allPages) => {
+        // 다음 페이지가 있으면 다음 페이지 번호 반환
+        // 없으면 undefined 반환
+    },
+    initialPageParam: 0,  // 첫 페이지는 0번부터 시작
+});
+
+📝 각 옵션 설명:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- queryFn: ({ pageParam = 0 }) => ...
+  → pageParam: 현재 몇 번째 페이지인지
+  → 첫 번째는 initialPageParam 값 (보통 0)
+  → 두 번째는 getNextPageParam에서 반환한 값
+
+- getNextPageParam: (lastPage, allPages) => ...
+  → 다음 페이지가 있으면 다음 페이지 번호 반환
+  → 없으면 undefined 반환 (더 이상 불러올 게 없음)
+  → 예: return allPages.length; (다음 페이지 번호)
+
+- initialPageParam: 0
+  → 첫 페이지 번호 (보통 0 또는 1)
+
+📤 반환값:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- data.pages: 각 페이지의 데이터 배열
+  → 예: [첫페이지데이터, 두번째페이지데이터, ...]
+
+- fetchNextPage(): 다음 페이지 가져오기 함수
+  → 스크롤이 끝에 도달했을 때 호출
+
+- hasNextPage: 다음 페이지가 있는지 (true/false)
+
+- isFetchingNextPage: 다음 페이지를 가져오는 중인지 (true/false)
+
+💡 특징:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ 첫 페이지는 자동으로 가져옴
+✅ fetchNextPage()를 호출해야 다음 페이지를 가져옴
+✅ 모든 페이지의 데이터를 하나로 합쳐서 사용 가능
+
+📌 예시 코드:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function BoardListPage() {
+    const {
+        data,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage
+    } = useInfiniteQuery({
+        queryKey: ["게시물목록"],
+        queryFn: ({ pageParam = 0 }) => 
+            getBoardListRequest(pageParam, 10),  // 10개씩 가져오기
+        getNextPageParam: (lastPage, allPages) => {
+            // 마지막 페이지에 10개가 있으면 다음 페이지가 더 있음
+            if (lastPage.data.length === 10) {
+                return allPages.length;  // 다음 페이지 번호
+            }
+            return undefined;  // 더 이상 없음
+        },
+        initialPageParam: 0,
+    });
+
+    // 모든 페이지의 데이터를 하나의 배열로 합치기
+    const allBoards = data?.pages.flatMap(page => page.data) ?? [];
+
+    // 스크롤이 끝에 도달하면 다음 페이지 가져오기
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.innerHeight + window.scrollY >= 
+                document.body.offsetHeight - 100) {
+                if (hasNextPage && !isFetchingNextPage) {
+                    fetchNextPage();
+                }
+            }
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+    return (
+        <div>
+            {allBoards.map((board) => (
+                <div key={board.id}>{board.title}</div>
+            ))}
+            {isFetchingNextPage && <div>더 불러오는 중...</div>}
+        </div>
+    );
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3️⃣ useMutation - 데이터 변경 (POST, PUT, DELETE)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📖 용도: 서버에 데이터를 보내서 변경할 때 사용
+         (게시물 작성, 수정, 삭제, 프로필 변경 등)
+
+🔧 기본 사용법:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const mutation = useMutation({
+    mutationFn: addBoardRequest,  // 데이터를 보내는 함수
+    onSuccess: (response) => {
+        // 성공했을 때 할 일
+        alert("게시물이 작성되었습니다!");
+    },
+    onError: (error) => {
+        // 실패했을 때 할 일
+        alert("에러가 발생했습니다!");
+    },
+});
+
+// 나중에 버튼 클릭 시 실행
+mutation.mutate({ title: "제목", content: "내용" });
+
+📝 각 옵션 설명:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- mutationFn: addBoardRequest
+  → 실제로 서버에 데이터를 보내는 함수
+  → 예: axios.post("/board/add", data)
+
+- onSuccess: (response) => { ... }
+  → 서버 요청이 성공했을 때 실행되는 함수
+  → 예: 알림 표시, 페이지 이동, 데이터 새로고침
+
+- onError: (error) => { ... }
+  → 서버 요청이 실패했을 때 실행되는 함수
+  → 예: 에러 메시지 표시
+
+📤 반환값:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- mutate: 실행 함수
+  → mutation.mutate(데이터)로 호출
+  → 예: mutation.mutate({ title: "제목" })
+
+- mutateAsync: Promise 반환하는 실행 함수
+  → await를 사용할 수 있음
+  → 예: await mutation.mutateAsync({ title: "제목" })
+
+- isPending: 지금 서버에 요청 중인지 (true/false)
+  → true면 "저장 중..." 버튼 비활성화 가능
+
+- isError: 에러가 발생했는지 (true/false)
+
+- isSuccess: 성공했는지 (true/false)
+
+💡 특징:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❌ useQuery와 다르게 자동으로 실행 안 됨
+✅ .mutate() 또는 .mutateAsync()를 호출해야 실행됨
+✅ 버튼 클릭, 폼 제출 등 사용자 액션에 반응
+
+📌 예시 코드:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function BoardAddPage() {
+    const [title, setTitle] = useState("");
+    const [content, setContent] = useState("");
+
+    const addBoardMutation = useMutation({
+        mutationFn: addBoardRequest,
+        onSuccess: (response) => {
+            if (response.data.status === "success") {
+                alert("게시물이 작성되었습니다!");
+                navigate("/board/list");
+            }
+        },
+        onError: (error) => {
+            alert("에러가 발생했습니다!");
+        },
+    });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        addBoardMutation.mutate({
+            title: title,
+            content: content,
+        });
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <input 
+                value={title} 
+                onChange={(e) => setTitle(e.target.value)} 
+            />
+            <textarea 
+                value={content} 
+                onChange={(e) => setContent(e.target.value)} 
+            />
+            <button 
+                type="submit" 
+                disabled={addBoardMutation.isPending}
+            >
+                {addBoardMutation.isPending ? "저장 중..." : "작성하기"}
+            </button>
+        </form>
+    );
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4️⃣ useQueryClient - 캐시 관리
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📖 용도: React Query의 캐시를 직접 조작할 때 사용
+
+🔧 기본 사용법:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const queryClient = useQueryClient();
+
+// 1. 특정 쿼리 캐시 무효화 (다시 가져오기)
+queryClient.invalidateQueries({ 
+    queryKey: ["게시물목록"] 
+});
+
+// 2. 캐시된 데이터 직접 가져오기
+const cachedData = queryClient.getQueryData(["게시물목록"]);
+
+// 3. 캐시 데이터 직접 수정하기
+queryClient.setQueryData(["게시물목록"], newData);
+
+📝 각 메서드 설명:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- invalidateQueries()
+  → 특정 쿼리의 캐시를 무효화하고 다시 가져옴
+  → 예: 게시물을 작성한 후 목록을 새로고침할 때
+
+- getQueryData()
+  → 캐시에 저장된 데이터를 직접 가져옴
+  → 서버에 요청하지 않고 캐시에서만 가져옴
+
+- setQueryData()
+  → 캐시 데이터를 직접 수정
+  → 서버에 요청하지 않고 캐시만 수정
+
+📌 예시 코드:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function BoardAddPage() {
+    const queryClient = useQueryClient();
+    const navigate = useNavigate();
+
+    const addBoardMutation = useMutation({
+        mutationFn: addBoardRequest,
+        onSuccess: () => {
+            // 게시물 작성 성공 후 목록 새로고침
+            queryClient.invalidateQueries({ 
+                queryKey: ["게시물목록"] 
+            });
+            navigate("/board/list");
+        },
+    });
+
+    // ...
+}
+
+
+==========================================
+Zustand - 초보자 가이드
+==========================================
+
+📌 Zustand란?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+React 컴포넌트 간에 데이터를 공유할 수 있게 해주는 도구입니다.
+
+비유:
+- useState = 내 방의 서랍 (컴포넌트 내부에서만 사용)
+- Zustand = 공용 사물함 (여러 컴포넌트에서 공유)
+
+여러 컴포넌트에서 같은 데이터를 사용해야 할 때 사용합니다.
+예: 로그인한 사용자 정보, 사이드바 열림/닫힘 상태 등
+
+
+📌 기본 개념
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Store (스토어)
+   - 데이터를 저장하는 공간
+   - create()로 생성
+
+2. set()
+   - 데이터를 변경하는 함수
+   - 예: set({ count: 10 })
+
+3. get()
+   - 현재 데이터를 가져오는 함수
+   - 예: const count = get().count
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+기본 사용법
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1️⃣ 스토어 만들기 (store/usePrincipalState.js)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+import { create } from "zustand";
+
+export const usePrincipalState = create((set, get) => ({
+    // 1. 초기 상태
+    isLoggedIn: false,
+    principal: null,
+    loading: true,
+
+    // 2. 상태를 변경하는 함수들
+    login: (userData) => 
+        set({ 
+            isLoggedIn: true, 
+            principal: userData 
+        }),
+
+    logout: () => {
+        localStorage.removeItem("AccessToken");
+        set({ 
+            isLoggedIn: false, 
+            principal: null 
+        });
+    },
+
+    setLoading: (isLoading) => 
+        set({ loading: isLoading }),
+}));
+
+📝 설명:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- create(): 스토어를 만드는 함수
+- set(): 상태를 변경하는 함수
+  → set({ isLoggedIn: true }) → isLoggedIn을 true로 변경
+- get(): 현재 상태를 가져오는 함수
+  → get().isLoggedIn → 현재 isLoggedIn 값 가져오기
+
+
+2️⃣ 컴포넌트에서 사용하기
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function MainHeader() {
+    // 스토어에서 데이터 가져오기
+    const { isLoggedIn, principal, logout } = usePrincipalState();
+
+    return (
+        <div>
+            {isLoggedIn ? (
+                <div>
+                    <p>안녕하세요, {principal.username}님!</p>
+                    <button onClick={logout}>로그아웃</button>
+                </div>
+            ) : (
+                <button>로그인</button>
+            )}
+        </div>
+    );
+}
+
+📝 설명:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- usePrincipalState()로 스토어에서 데이터 가져오기
+- 필요한 것만 가져와서 사용 (isLoggedIn, principal, logout)
+- 여러 컴포넌트에서 같은 스토어를 사용하면 같은 데이터 공유
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+React Query vs Zustand
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📌 언제 뭘 쓸까?
+
+React Query (서버 데이터):
+✅ 서버에서 가져온 데이터
+✅ 게시물 목록, 사용자 정보 등
+✅ 백엔드/DB와 동기화가 필요한 데이터
+
+Zustand (클라이언트 상태):
+✅ 화면에만 필요한 상태
+✅ 로그인 여부, 사이드바 열림/닫힘
+✅ 사용자 입력, UI 상태 등
+
+📌 함께 사용하기:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- React Query: 서버에서 사용자 정보 가져오기
+- Zustand: 가져온 사용자 정보를 전역에서 사용하기
+
+예시:
+1. React Query로 서버에서 사용자 정보 가져오기
+2. 가져온 정보를 Zustand에 저장하기
+3. 여러 컴포넌트에서 Zustand로 사용자 정보 사용하기

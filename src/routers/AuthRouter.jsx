@@ -11,6 +11,7 @@ function AuthRouter() {
                 <Route path="/signin" element={<SigninPage />} />
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/oauth2/*" element={<OAuth2Router />} />
+                
             </Routes>
         </>
     );

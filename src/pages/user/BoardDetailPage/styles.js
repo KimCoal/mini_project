@@ -24,16 +24,16 @@ export const mainContainer = css`
     box-sizing: border-box;
 
     & > div:nth-of-type(1) > button {
-        border: none;
-        background-color: transparent;
-        padding: 8px 12px;
-        font-size: 14px;
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 5px;
-        cursor: pointer;
+        border: none;
         border-radius: 8px;
+        background-color: transparent;
+        padding: 8px 12px;
+        font-size: 14px;
+        cursor: pointer;
         transition: all 0.15s ease;
 
         &:hover {
@@ -44,7 +44,7 @@ export const mainContainer = css`
     & > div:nth-of-type(2) {
         display: flex;
         flex-direction: column;
-        gap: 24px;
+        gap: 20px;
         box-sizing: border-box;
         border-radius: 14px;
         background-color: white;
@@ -55,7 +55,7 @@ export const mainContainer = css`
 export const topBox = css`
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
     padding: 24px;
     box-sizing: border-box;
     border-bottom: 1px solid #dbdbdb;
@@ -84,12 +84,24 @@ export const boardBottomBox = css`
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
+
+            & > img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
         }
 
         & > p {
-            font-size: 18px;
+            font-size: 14px;
             color: #0a0a0a;
         }
+    }
+
+    & > div:nth-of-type(2) {
+        display: flex;
+        flex-direction: column;
     }
 `;
 
