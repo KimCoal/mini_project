@@ -4,8 +4,8 @@ export const container = css`
     width: 100vw;
     height: 100vh;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     background: #eef2ff;
     background: linear-gradient(
         90deg,
@@ -29,9 +29,10 @@ export const mainContainer = css`
         border: none;
         background-color: transparent;
         border-radius: 8px;
-        cursor: pointer;
         color: oklch(0.446 0.03 256.802);
-        transition: all 0.15s ease;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
         &:hover {
             background-color: #f2f2f2;
             color: black;
@@ -60,7 +61,6 @@ export const topBox = css`
     }
 
     & > p {
-        margin: 0;
         font-size: 16px;
         font-weight: 300;
         color: #717182;
@@ -77,7 +77,7 @@ export const bottomBox = css`
     & > div {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 5px;
 
         & > input {
             outline: none;
@@ -88,24 +88,25 @@ export const bottomBox = css`
             background-color: rgb(243, 243, 245);
 
             &:focus {
-                outline: 2px solid #aaaaaa;
+                outline: 3px solid #aaaaaa;
             }
         }
     }
 
     & > button {
         border: none;
+        padding: 8px 16px;
         border-radius: 8px;
-        padding: 10px 32px;
-        font-size: 18px;
+        font-size: 14px;
+        transition: all 0.15s ease;
+        cursor: pointer;
+        background: #4f39f6;
         background: linear-gradient(
             90deg,
             rgba(79, 57, 246, 0.9) 0%,
             rgba(152, 16, 250, 0.9) 100%
         );
         color: white;
-        transition: all 0.15s ease;
-        cursor: pointer;
 
         &:hover {
             background: linear-gradient(
