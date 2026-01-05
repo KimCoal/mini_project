@@ -13,8 +13,10 @@ import {
 } from "../../../apis/account/accountApis";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getBoardListByUserIdRequest } from "../../../apis/board/boardApis";
+import { SyncLoader } from "react-spinners";
 
 function ProfilePage() {
+    const [isSending, setIsSending] = useState(false);
     const [progress, setProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
     const navigate = useNavigate();
@@ -111,12 +113,14 @@ function ProfilePage() {
         if (!confirm("이메일 인증코드를 전송하시겠습니까?")) {
             return;
         }
-
+        setIsSending(true);
         emailSendRequest().then((response) => {
             if (response.data.status === "success") {
+                setIsSending(false);
                 alert(response.data.message);
                 return;
             } else if (response.data.status === "failed") {
+                setIsSending(false);
                 alert(response.data.message);
                 return;
             }
@@ -262,6 +266,13 @@ function ProfilePage() {
             {isUploading ? (
                 <div css={s.blurBox}>
                     <h4>{progress}%</h4>
+                </div>
+            ) : (
+                <></>
+            )}
+            {isSending ? (
+                <div css={s.spinnerBox}>
+                    <SyncLoader color="#4f39f6" height={50} />
                 </div>
             ) : (
                 <></>
