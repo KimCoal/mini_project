@@ -36,6 +36,32 @@ export const getBoardListRequest = async () => {
     }
 };
 
+export const getBoardInfiniteRequest = async ({ pageParam }) => {
+    const LIMIT = 5;
+    const params = { limit: LIMIT };
+
+    instance.interceptors.request.use((config) => {
+        const accessToken = localStorage.getItem("AccessToken");
+
+        if (accessToken) {
+            config.headers.Authorization = `Bearer ${accessToken}`;
+        }
+
+        return config;
+    });
+
+    if (pageParam?.cursorCreateDt && pageParam?.cursorBoardId) {
+        params.cursorCreateDt = pageParam.cursorCreateDt;
+        params.cursorBoardId = pageParam.cursorBoardId;
+    }
+    try {
+        const response = await instance.get("/board/list/infinite", { params });
+        return response;
+    } catch (error) {
+        return error.response;
+    }
+};
+
 export const getBoardByBoardIdRequest = async (boardId) => {
     instance.interceptors.request.use((config) => {
         const accessToken = localStorage.getItem("AccessToken");
